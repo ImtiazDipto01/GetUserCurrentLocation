@@ -30,10 +30,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocationListener {
 
     GoogleMap mymap ;
-    GoogleApiClient mGoogleApiClient;
+    GoogleApiClient googleApiClient ;
+    LocationRequest locationRequest ;
     Location mLastLocation;
     Marker mCurrLocationMarker;
-    LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     protected synchronized void buildGoogleApiClient(){
 
-        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(this)
+        googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -96,11 +96,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onProviderDisabled(String provider) {
 
+
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
 
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(1000) ;
+        locationRequest.setFastestInterval(1000) ;
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY) ;
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED){
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, (com.google.android.gms.location.LocationListener) this) ;
+        }
     }
 
     @Override
